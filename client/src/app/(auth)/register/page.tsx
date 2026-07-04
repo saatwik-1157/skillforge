@@ -30,7 +30,7 @@ export default function RegisterPage() {
       );
       setSession(res.data.user, res.data.accessToken);
       toast.success('Account created! Check your email for the verification code.');
-      router.push('/onboarding');
+      router.push('/verify-email');
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Registration failed');
     } finally {
