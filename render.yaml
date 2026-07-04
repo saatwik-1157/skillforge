@@ -1,0 +1,71 @@
+# ============================================================================
+# SkillForge — Render Blueprint
+# One file deploys everything: PostgreSQL + the Express API + the Next.js web app.
+#
+# How to use:
+#   1. Push this repo to GitHub.
+#   2. Render Dashboard -> New -> Blueprint -> connect the repo.
+#      Render reads this file and creates the database + both services.
+#   3. After the first deploy, set the two env vars marked "sync: false"
+#      (the public URLs of the two services) and redeploy the web service.
+#   See DEPLOYMENT.md for the full walkthrough.
+# ============================================================================
+
+databases:
+  - name: skillforge-db
+    databaseName: skillforge
+    plan: free
+
+services:
+  # ---- Express API -------------------------------------------------------
+  - type: web
+    name: skillforge-api
+    runtime: node
+    plan: free
+    rootDir: server
+    # --include=dev forces devDependencies (typescript, prisma, tsx) even though
+    # NODE_ENV=production is set for runtime.
+    buildCommand: npm install --include=dev && npx prisma generate && npm run build
+    # migrate creates tables on the fresh DB; seed loads demo data (idempotent —
+    # remove "&& npm run seed" later to speed up cold starts).
+    startCommand: npx prisma migrate deploy && npm run seed && npm run start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: skillforge-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: API_PREFIX
+        value: /api/v1
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_ACCESS_EXPIRES
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES
+        value: 7d
+      - key: BCRYPT_ROUNDS
+        value: "12"
+      # Set this to the web app's URL after the first deploy (for CORS), e.g.
+      # https://skillforge-web.onrender.com
+      - key: CLIENT_URL
+        sync: false
+
+  # ---- Next.js web app ---------------------------------------------------
+  - type: web
+    name: skillforge-web
+    runtime: node
+    plan: free
+    rootDir: client
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      # Set this to the API's URL + /api/v1 after the first deploy, e.g.
+      # https://skillforge-api.onrender.com/api/v1
+      # NOTE: this is baked in at BUILD time — after setting it, trigger
+      # "Clear build cache & deploy" on this service.
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
