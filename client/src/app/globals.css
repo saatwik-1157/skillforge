@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * SkillForge theme tokens.
+ * Light: white surfaces, navy text, orange primary.
+ * Dark:  deep navy surfaces, off-white text, warm orange primary.
+ */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --primary: 24 95% 53%; /* orange */
+    --primary-foreground: 0 0% 100%;
+
+    --navy: 222 47% 20%;
+    --navy-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 20%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 24 95% 96%;
+    --accent-foreground: 24 95% 40%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 24 95% 53%;
+
+    --radius: 0.9rem;
+  }
+
+  .dark {
+    --background: 222 47% 8%;
+    --foreground: 210 40% 96%;
+
+    --card: 222 44% 12%;
+    --card-foreground: 210 40% 96%;
+
+    --primary: 24 95% 55%;
+    --primary-foreground: 222 47% 8%;
+
+    --navy: 210 40% 96%;
+    --navy-foreground: 222 47% 11%;
+
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 96%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 24 60% 18%;
+    --accent-foreground: 24 95% 70%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 24 95% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-6;
+  }
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-orange-600 bg-clip-text text-transparent;
+  }
+  .glass {
+    @apply border border-white/10 bg-white/60 backdrop-blur-xl dark:bg-white/5;
+  }
+}
+
+/* Loading skeleton shimmer */
+.skeleton {
+  @apply relative overflow-hidden rounded-md bg-muted;
+}
+.skeleton::after {
+  content: '';
+  @apply absolute inset-0 -translate-x-full;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--foreground) / 0.06),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}

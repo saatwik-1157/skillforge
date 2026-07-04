@@ -1,0 +1,23 @@
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
+import { Hero } from '@/components/landing/Hero';
+import { Stats, HowItWorks, Categories, Testimonials, FAQ } from '@/components/landing/Sections';
+import { CTA } from '@/components/landing/CTA';
+
+export default function LandingPage() {
+  return (
+    <div className="flex min-h-screen flex-col">
+      <Navbar />
+      <main className="flex-1">
+        <Hero />
+        <Stats />
+        <HowItWorks />
+        <Categories />
+        <Testimonials />
+        <FAQ />
+        <CTA />
+      </main>
+      <Footer />
+    </div>
+  );
+}

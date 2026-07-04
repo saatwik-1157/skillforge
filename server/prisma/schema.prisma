@@ -1,0 +1,694 @@
+// ============================================================================
+// SkillForge — Prisma Schema
+// "Turn Skills Into Successful Businesses."
+//
+// This is the single source of truth for the SkillForge data model. Every
+// backend module (auth, business, roadmap, learning, mentor, community,
+// notification) builds against the models defined here.
+//
+// Conventions:
+//   - All primary keys are cuid() strings.
+//   - All tables carry createdAt / updatedAt audit columns.
+//   - Enums are used for closed value sets (roles, statuses, difficulty...).
+//   - Relations are explicit and named where ambiguity could arise.
+//   - Join tables are modelled explicitly when they carry extra data.
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------------------------------
+// Enums
+// ----------------------------------------------------------------------------
+
+enum Role {
+  VISITOR
+  ENTREPRENEUR
+  MENTOR
+  ADMIN
+}
+
+enum BusinessType {
+  HOME
+  ONLINE
+  OFFLINE
+  HYBRID
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum GrowthPotential {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ExperienceLevel {
+  NONE
+  BEGINNER
+  INTERMEDIATE
+  EXPERIENCED
+}
+
+enum RoadmapStepStatus {
+  LOCKED
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ResourceType {
+  VIDEO
+  ARTICLE
+  PDF
+  TEMPLATE
+  WORKSHEET
+  CHECKLIST
+}
+
+enum EnrollmentStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum SessionStatus {
+  REQUESTED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum MentorVerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum NotificationType {
+  SYSTEM
+  ROADMAP
+  LEARNING
+  MENTOR
+  COMMUNITY
+  ACHIEVEMENT
+  CERTIFICATE
+}
+
+enum ContentStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum BookmarkTarget {
+  BUSINESS
+  RESOURCE
+  FORUM_POST
+}
+
+enum ComplaintStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+// ----------------------------------------------------------------------------
+// Identity & Access
+// ----------------------------------------------------------------------------
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  passwordHash      String?   // null for pure OAuth accounts
+  name              String
+  role              Role      @default(ENTREPRENEUR)
+  avatarUrl         String?
+  bio               String?
+  location          String?
+  phone             String?
+  googleId          String?   @unique
+  isEmailVerified   Boolean   @default(false)
+  isActive          Boolean   @default(true)
+
+  // Entrepreneur onboarding / assessment
+  budget            Int?      // in INR
+  experienceLevel   ExperienceLevel?
+  availableHours    Int?      // hours per week
+  preferredType     BusinessType?
+  businessGoal      String?
+  readinessScore    Int       @default(0) // 0-100 computed score
+  profileCompletion Int       @default(0) // 0-100
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  skills            UserSkill[]
+  interests         UserInterest[]
+  refreshTokens     RefreshToken[]
+  otpTokens         OtpToken[]
+  bookmarks         Bookmark[]
+  notifications     Notification[]
+  roadmapProgress   UserRoadmap[]
+  enrollments       Enrollment[]
+  certificates      Certificate[]
+  achievements      UserAchievement[]
+  mentorProfile     MentorProfile?
+  sessionsAsUser    MentorSession[]  @relation("SessionEntrepreneur")
+  forumPosts        ForumPost[]
+  comments          Comment[]
+  postLikes         PostLike[]
+  reviewsGiven      MentorReview[]   @relation("ReviewAuthor")
+  complaints        Complaint[]
+  announcements     Announcement[]   @relation("AnnouncementAuthor")
+
+  @@index([role])
+  @@map("users")
+}
+
+model RefreshToken {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  userAgent  String?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model OtpToken {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash   String
+  purpose    String   // "EMAIL_VERIFY" | "PASSWORD_RESET"
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@map("otp_tokens")
+}
+
+// ----------------------------------------------------------------------------
+// Skills & Interests
+// ----------------------------------------------------------------------------
+
+model Skill {
+  id        String       @id @default(cuid())
+  name      String       @unique
+  slug      String       @unique
+  icon      String?
+  createdAt DateTime     @default(now())
+  users     UserSkill[]
+  businesses BusinessSkill[]
+
+  @@map("skills")
+}
+
+model UserSkill {
+  userId    String
+  skillId   String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill     Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  proficiency ExperienceLevel @default(BEGINNER)
+
+  @@id([userId, skillId])
+  @@map("user_skills")
+}
+
+model Interest {
+  id        String         @id @default(cuid())
+  name      String         @unique
+  slug      String         @unique
+  createdAt DateTime       @default(now())
+  users     UserInterest[]
+
+  @@map("interests")
+}
+
+model UserInterest {
+  userId     String
+  interestId String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interest   Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@id([userId, interestId])
+  @@map("user_interests")
+}
+
+// ----------------------------------------------------------------------------
+// Categories
+// ----------------------------------------------------------------------------
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  icon        String?
+  createdAt   DateTime   @default(now())
+  businesses  Business[]
+  resources   LearningResource[]
+
+  @@map("categories")
+}
+
+// ----------------------------------------------------------------------------
+// Business Ideas
+// ----------------------------------------------------------------------------
+
+model Business {
+  id               String          @id @default(cuid())
+  title            String
+  slug             String          @unique
+  tagline          String?
+  description      String          @db.Text
+  categoryId       String?
+  category         Category?       @relation(fields: [categoryId], references: [id])
+  difficulty       Difficulty      @default(BEGINNER)
+  businessType     BusinessType    @default(HOME)
+  minInvestment    Int             // INR
+  maxInvestment    Int             // INR
+  expectedProfit   String          // e.g. "₹15,000 – ₹40,000 / month"
+  estimatedTime    String          // e.g. "2-4 weeks to launch"
+  growthPotential  GrowthPotential @default(MEDIUM)
+  targetCustomers  String          @db.Text
+  toolsRequired    String[]        // list of tools/equipment
+  coverImage       String?
+  status           ContentStatus   @default(PUBLISHED)
+
+  // Rich detail-page content (structured JSON blocks)
+  marketDemand     String?         @db.Text
+  swot             Json?           // { strengths, weaknesses, opportunities, threats }
+  investmentBreakdown Json?        // [{ item, amount }]
+  licenses         String[]
+  registrations    String[]
+  marketingStrategy String?        @db.Text
+  riskFactors      String[]
+  revenueModel     String?         @db.Text
+  businessCanvas   Json?           // lean canvas blocks
+  checklist        Json?           // [{ label, done }]
+
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  requiredSkills   BusinessSkill[]
+  roadmap          Roadmap?
+  bookmarks        Bookmark[]
+
+  @@index([categoryId])
+  @@index([businessType])
+  @@index([difficulty])
+  @@map("businesses")
+}
+
+model BusinessSkill {
+  businessId String
+  skillId    String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  skill      Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  weight     Int      @default(1) // used by recommendation engine
+
+  @@id([businessId, skillId])
+  @@map("business_skills")
+}
+
+// ----------------------------------------------------------------------------
+// Roadmaps
+// ----------------------------------------------------------------------------
+
+model Roadmap {
+  id          String        @id @default(cuid())
+  businessId  String        @unique
+  business    Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  title       String
+  description String?       @db.Text
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  steps       RoadmapStep[]
+  userRoadmaps UserRoadmap[]
+
+  @@map("roadmaps")
+}
+
+model RoadmapStep {
+  id          String        @id @default(cuid())
+  roadmapId   String
+  roadmap     Roadmap       @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  order       Int
+  title       String
+  description String?       @db.Text
+  resourceUrl String?
+  createdAt   DateTime      @default(now())
+  progress    UserRoadmapStep[]
+
+  @@unique([roadmapId, order])
+  @@map("roadmap_steps")
+}
+
+model UserRoadmap {
+  id         String            @id @default(cuid())
+  userId     String
+  roadmapId  String
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roadmap    Roadmap           @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  progress   Int               @default(0) // 0-100
+  startedAt  DateTime          @default(now())
+  completedAt DateTime?
+  steps      UserRoadmapStep[]
+
+  @@unique([userId, roadmapId])
+  @@map("user_roadmaps")
+}
+
+model UserRoadmapStep {
+  id            String            @id @default(cuid())
+  userRoadmapId String
+  stepId        String
+  userRoadmap   UserRoadmap       @relation(fields: [userRoadmapId], references: [id], onDelete: Cascade)
+  step          RoadmapStep       @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  status        RoadmapStepStatus @default(NOT_STARTED)
+  completedAt   DateTime?
+
+  @@unique([userRoadmapId, stepId])
+  @@map("user_roadmap_steps")
+}
+
+// ----------------------------------------------------------------------------
+// Learning Platform
+// ----------------------------------------------------------------------------
+
+model LearningResource {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  type        ResourceType
+  description String?       @db.Text
+  categoryId  String?
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  contentUrl  String?       // video/pdf url (Cloudinary)
+  body        String?       @db.Text // markdown for ARTICLE
+  thumbnail   String?
+  durationMin Int?
+  difficulty  Difficulty    @default(BEGINNER)
+  status      ContentStatus @default(PUBLISHED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  lessons     Lesson[]
+  enrollments Enrollment[]
+  bookmarks   Bookmark[]
+  certificates Certificate[]
+
+  @@index([type])
+  @@index([categoryId])
+  @@map("learning_resources")
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  resourceId  String
+  resource    LearningResource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  order       Int
+  title       String
+  contentUrl  String?
+  body        String?  @db.Text
+  durationMin Int?
+  createdAt   DateTime @default(now())
+  progress    LessonProgress[]
+
+  @@unique([resourceId, order])
+  @@map("lessons")
+}
+
+model Enrollment {
+  id          String           @id @default(cuid())
+  userId      String
+  resourceId  String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource    LearningResource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  status      EnrollmentStatus @default(IN_PROGRESS)
+  progress    Int              @default(0) // 0-100
+  startedAt   DateTime         @default(now())
+  completedAt DateTime?
+  lessons     LessonProgress[]
+
+  @@unique([userId, resourceId])
+  @@map("enrollments")
+}
+
+model LessonProgress {
+  id           String     @id @default(cuid())
+  enrollmentId String
+  lessonId     String
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lesson       Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completed    Boolean    @default(false)
+  completedAt  DateTime?
+
+  @@unique([enrollmentId, lessonId])
+  @@map("lesson_progress")
+}
+
+// ----------------------------------------------------------------------------
+// Mentors
+// ----------------------------------------------------------------------------
+
+model MentorProfile {
+  id                 String                   @id @default(cuid())
+  userId             String                   @unique
+  user               User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  headline           String
+  expertise          String[]
+  yearsExperience    Int
+  languages          String[]
+  hourlyRate         Int                      @default(0) // 0 = free
+  availability       Json?                    // weekly availability blocks
+  verificationStatus MentorVerificationStatus @default(PENDING)
+  ratingAvg          Float                    @default(0)
+  ratingCount        Int                      @default(0)
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+
+  sessions           MentorSession[]          @relation("SessionMentor")
+  reviews            MentorReview[]
+
+  @@map("mentor_profiles")
+}
+
+model MentorSession {
+  id            String         @id @default(cuid())
+  mentorId      String
+  entrepreneurId String
+  mentor        MentorProfile  @relation("SessionMentor", fields: [mentorId], references: [id], onDelete: Cascade)
+  entrepreneur  User           @relation("SessionEntrepreneur", fields: [entrepreneurId], references: [id], onDelete: Cascade)
+  scheduledAt   DateTime
+  durationMin   Int            @default(30)
+  status        SessionStatus  @default(REQUESTED)
+  topic         String?
+  notes         String?        @db.Text
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  review        MentorReview?
+
+  @@index([mentorId])
+  @@index([entrepreneurId])
+  @@map("mentor_sessions")
+}
+
+model MentorReview {
+  id         String        @id @default(cuid())
+  mentorId   String
+  authorId   String
+  sessionId  String?       @unique
+  mentor     MentorProfile @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  author     User          @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  session    MentorSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  rating     Int           // 1-5
+  comment    String?       @db.Text
+  createdAt  DateTime      @default(now())
+
+  @@index([mentorId])
+  @@map("mentor_reviews")
+}
+
+// ----------------------------------------------------------------------------
+// Certificates & Achievements
+// ----------------------------------------------------------------------------
+
+model Certificate {
+  id           String            @id @default(cuid())
+  userId       String
+  resourceId   String?
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource     LearningResource? @relation(fields: [resourceId], references: [id], onDelete: SetNull)
+  title        String
+  serial       String            @unique // verification code
+  issuedAt     DateTime          @default(now())
+  pdfUrl       String?
+
+  @@index([userId])
+  @@map("certificates")
+}
+
+model Achievement {
+  id          String            @id @default(cuid())
+  key         String            @unique // e.g. FIRST_COURSE_COMPLETED
+  title       String
+  description String
+  icon        String?
+  points      Int               @default(10)
+  users       UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  userId        String
+  achievementId String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  unlockedAt    DateTime    @default(now())
+
+  @@id([userId, achievementId])
+  @@map("user_achievements")
+}
+
+// ----------------------------------------------------------------------------
+// Bookmarks
+// ----------------------------------------------------------------------------
+
+model Bookmark {
+  id         String         @id @default(cuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  target     BookmarkTarget
+  businessId String?
+  business   Business?      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  resourceId String?
+  resource   LearningResource? @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  postId     String?
+  post       ForumPost?     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt  DateTime       @default(now())
+
+  @@index([userId])
+  @@map("bookmarks")
+}
+
+// ----------------------------------------------------------------------------
+// Community / Forum
+// ----------------------------------------------------------------------------
+
+model ForumPost {
+  id         String     @id @default(cuid())
+  authorId   String
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title      String
+  slug       String     @unique
+  body       String     @db.Text
+  tags       String[]
+  isStory    Boolean    @default(false) // success story vs question
+  viewCount  Int        @default(0)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  comments   Comment[]
+  likes      PostLike[]
+  bookmarks  Bookmark[]
+
+  @@index([authorId])
+  @@map("forum_posts")
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  postId     String
+  authorId   String
+  post       ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author     User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body       String    @db.Text
+  parentId   String?   // threaded replies
+  parent     Comment?  @relation("CommentThread", fields: [parentId], references: [id], onDelete: Cascade)
+  replies    Comment[] @relation("CommentThread")
+  createdAt  DateTime  @default(now())
+
+  @@index([postId])
+  @@map("comments")
+}
+
+model PostLike {
+  userId String
+  postId String
+  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, postId])
+  @@map("post_likes")
+}
+
+// ----------------------------------------------------------------------------
+// Notifications
+// ----------------------------------------------------------------------------
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType @default(SYSTEM)
+  title     String
+  body      String
+  link      String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+// ----------------------------------------------------------------------------
+// Admin: Complaints & Announcements
+// ----------------------------------------------------------------------------
+
+model Complaint {
+  id        String          @id @default(cuid())
+  userId    String
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   String
+  body      String          @db.Text
+  status    ComplaintStatus @default(OPEN)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@map("complaints")
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  authorId  String
+  author    User     @relation("AnnouncementAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  title     String
+  body      String   @db.Text
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("announcements")
+}

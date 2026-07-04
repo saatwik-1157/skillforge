@@ -1,0 +1,61 @@
+# ============================================================================
+# SkillForge — Docker Compose
+# Brings up Postgres, the Express API, and the Next.js web app.
+# Usage: cp .env.example .env && docker compose up --build
+# ============================================================================
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: skillforge-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-skillforge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-skillforge}
+      POSTGRES_DB: ${POSTGRES_DB:-skillforge}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-skillforge}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: skillforge-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-skillforge}:${POSTGRES_PASSWORD:-skillforge}@db:5432/${POSTGRES_DB:-skillforge}?schema=public
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 4000
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:3000}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-access-secret}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-refresh-secret}
+    ports:
+      - "4000:4000"
+    command: sh -c "npx prisma migrate deploy && npm run start"
+
+  web:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: skillforge-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000/api/v1}
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
