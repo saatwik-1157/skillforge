@@ -138,7 +138,9 @@ export default function SettingsPage() {
               <CardDescription>PNG or JPG, shown across SkillForge.</CardDescription>
             </CardHeader>
             <CardContent className="flex items-center gap-5">
-              <Avatar src={avatarUrl} name={form.name || user?.name} className="h-20 w-20 text-2xl" />
+              <span className="tile gradient-warm inline-flex rounded-full p-1">
+                <Avatar src={avatarUrl} name={form.name || user?.name} className="h-20 w-20 border-2 border-background text-2xl" />
+              </span>
               <div>
                 <input
                   ref={fileRef}

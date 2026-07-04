@@ -74,10 +74,11 @@ export default function CertificatesPage() {
       ) : (
         <div className="grid gap-5 sm:grid-cols-2">
           {items.map((cert) => (
-            <Card key={cert.id} className="flex h-full flex-col">
+            <Card key={cert.id} className="relative flex h-full flex-col overflow-hidden">
+              <span aria-hidden className="absolute inset-x-0 top-0 h-1.5 gradient-sunset" />
               <CardHeader>
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <div className="tile h-11 w-11 shrink-0 gradient-sunset">
                     <Award className="h-6 w-6" />
                   </div>
                   <Badge variant="muted" className="shrink-0 font-mono">

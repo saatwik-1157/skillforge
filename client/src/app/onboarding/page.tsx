@@ -156,7 +156,7 @@ export default function OnboardingPage() {
         <div className="w-full max-w-2xl">
           {/* Logo header */}
           <Link href="/" className="mb-8 flex items-center justify-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <span className="tile flex h-10 w-10 items-center justify-center gradient-warm">
               <Flame className="h-5 w-5" />
             </span>
             <span className="text-xl font-extrabold">SkillForge</span>
@@ -171,7 +171,7 @@ export default function OnboardingPage() {
                     className={cn(
                       'flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors',
                       i < step
-                        ? 'bg-primary text-primary-foreground'
+                        ? 'gradient-warm text-white shadow-md shadow-primary/30'
                         : i === step
                           ? 'bg-primary/15 text-primary ring-2 ring-primary'
                           : 'bg-muted text-muted-foreground',
@@ -192,7 +192,7 @@ export default function OnboardingPage() {
                   <span
                     className={cn(
                       'h-0.5 w-6 rounded-full sm:w-10',
-                      i < step ? 'bg-primary' : 'bg-muted',
+                      i < step ? 'gradient-warm' : 'bg-muted',
                     )}
                   />
                 )}

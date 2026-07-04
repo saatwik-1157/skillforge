@@ -39,11 +39,11 @@ interface ListResponse {
 
 const META: Record<
   BookmarkTarget,
-  { label: string; icon: React.ComponentType<{ className?: string }> }
+  { label: string; icon: React.ComponentType<{ className?: string }>; grad: string }
 > = {
-  BUSINESS: { label: 'Business idea', icon: Briefcase },
-  RESOURCE: { label: 'Resource', icon: BookOpen },
-  FORUM_POST: { label: 'Discussion', icon: MessageSquare },
+  BUSINESS: { label: 'Business idea', icon: Briefcase, grad: 'gradient-warm' },
+  RESOURCE: { label: 'Resource', icon: BookOpen, grad: 'bg-gradient-to-br from-sky-500 to-indigo-500' },
+  FORUM_POST: { label: 'Discussion', icon: MessageSquare, grad: 'bg-gradient-to-br from-fuchsia-500 to-pink-500' },
 };
 
 function describe(b: Bookmark): { title: string; subtitle?: string | null; href: string } {
@@ -124,13 +124,13 @@ export default function BookmarksPage() {
       ) : (
         <ul className="space-y-3">
           {items.map((b) => {
-            const { label, icon: Icon } = META[b.target];
+            const { label, icon: Icon, grad } = META[b.target];
             const { title, subtitle, href } = describe(b);
             return (
               <li key={b.id}>
                 <Card>
                   <CardContent className="flex items-center gap-4 p-4">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <div className={`tile h-11 w-11 shrink-0 ${grad}`}>
                       <Icon className="h-5 w-5" />
                     </div>
                     <div className="min-w-0 flex-1">
