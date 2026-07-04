@@ -70,10 +70,10 @@ export default function DashboardPage() {
   }, []);
 
   const stats = [
-    { label: 'Saved Ideas', value: data?.counts.bookmarks ?? 0, icon: Bookmark, href: '/dashboard/bookmarks' },
-    { label: 'Courses In Progress', value: data?.counts.enrollments.inProgress ?? 0, icon: GraduationCap, href: '/dashboard/learning' },
-    { label: 'Certificates', value: data?.counts.certificates ?? 0, icon: Award, href: '/dashboard/certificates' },
-    { label: 'Achievements', value: data?.counts.achievements ?? 0, icon: TrendingUp, href: '/dashboard/achievements' },
+    { label: 'Saved Ideas', value: data?.counts.bookmarks ?? 0, icon: Bookmark, href: '/dashboard/bookmarks', grad: 'gradient-warm' },
+    { label: 'Courses In Progress', value: data?.counts.enrollments.inProgress ?? 0, icon: GraduationCap, href: '/dashboard/learning', grad: 'gradient-cool' },
+    { label: 'Certificates', value: data?.counts.certificates ?? 0, icon: Award, href: '/dashboard/certificates', grad: 'gradient-sunset' },
+    { label: 'Achievements', value: data?.counts.achievements ?? 0, icon: TrendingUp, href: '/dashboard/achievements', grad: 'bg-gradient-to-br from-violet-500 to-sky-500' },
   ];
 
   return (
@@ -106,9 +106,9 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 gap-4 lg:col-span-2">
           {stats.map((s) => (
             <Link key={s.label} href={s.href}>
-              <Card className="h-full">
+              <Card className="h-full transition-transform hover:-translate-y-0.5">
                 <CardContent className="flex items-center gap-4 py-6">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <div className={`tile h-12 w-12 ${s.grad}`}>
                     <s.icon className="h-6 w-6" />
                   </div>
                   <div>

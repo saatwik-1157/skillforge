@@ -331,12 +331,24 @@ export default function BusinessesPage() {
 
 function BusinessCard({ business: b }: { business: BusinessListItem }) {
   return (
-    <Card className="group flex flex-col overflow-hidden transition-shadow hover:shadow-lg">
+    <Card className="group flex flex-col overflow-hidden p-0 transition-shadow hover:shadow-lg">
+      <Link href={`/businesses/${b.slug}`} className="cover block h-40 w-full">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={b.coverImage ?? `https://picsum.photos/seed/sf-${b.slug}/640/360`}
+          alt={b.title}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        {b.category && (
+          <Badge className="absolute left-3 top-3 z-10 border-0 bg-black/45 text-white backdrop-blur-sm">
+            {b.category.name}
+          </Badge>
+        )}
+      </Link>
       <CardHeader className="gap-3">
         <div className="flex flex-wrap gap-2">
           <Badge variant="navy">{DIFFICULTY_LABELS[b.difficulty]}</Badge>
           <Badge variant="outline">{BUSINESS_TYPE_LABELS[b.businessType]}</Badge>
-          {b.category && <Badge variant="muted">{b.category.name}</Badge>}
         </div>
         <CardTitle className="text-lg leading-snug group-hover:text-primary">
           {b.title}

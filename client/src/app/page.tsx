@@ -1,7 +1,15 @@
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Hero } from '@/components/landing/Hero';
-import { Stats, HowItWorks, Categories, Testimonials, FAQ } from '@/components/landing/Sections';
+import {
+  Stats,
+  HowItWorks,
+  Categories,
+  FeaturedIdeas,
+  MentorHighlights,
+  Testimonials,
+  FAQ,
+} from '@/components/landing/Sections';
 import { CTA } from '@/components/landing/CTA';
 
 export default function LandingPage() {
@@ -13,6 +21,8 @@ export default function LandingPage() {
         <Stats />
         <HowItWorks />
         <Categories />
+        <FeaturedIdeas />
+        <MentorHighlights />
         <Testimonials />
         <FAQ />
         <CTA />

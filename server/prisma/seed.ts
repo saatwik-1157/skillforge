@@ -592,19 +592,27 @@ async function seedAchievements() {
   }
 }
 
+/** Deterministic, colorful illustrated avatar (rendered via <img>, so SVG is fine). */
+function avatarFor(seed: string) {
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(
+    seed,
+  )}&radius=50&backgroundColor=ffd5dc,d1d4f9,c0aede,b6e3f4,ffdfbf,c8f7d4`;
+}
+
 async function seedUsers(skills: { id: string; name: string }[]) {
   const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
 
   // Admin
   const admin = await prisma.user.upsert({
     where: { email: 'admin@skillforge.app' },
-    update: { name: 'SkillForge Admin', role: 'ADMIN', isEmailVerified: true, passwordHash },
+    update: { name: 'SkillForge Admin', role: 'ADMIN', isEmailVerified: true, passwordHash, avatarUrl: avatarFor('SkillForge Admin') },
     create: {
       email: 'admin@skillforge.app',
       name: 'SkillForge Admin',
       role: 'ADMIN',
       passwordHash,
       isEmailVerified: true,
+      avatarUrl: avatarFor('SkillForge Admin'),
       profileCompletion: 100,
     },
   });
@@ -612,13 +620,14 @@ async function seedUsers(skills: { id: string; name: string }[]) {
   // Mentor + VERIFIED mentor profile
   const mentor = await prisma.user.upsert({
     where: { email: 'mentor@skillforge.app' },
-    update: { name: 'Rahul Mentor', role: 'MENTOR', isEmailVerified: true, passwordHash },
+    update: { name: 'Rahul Mentor', role: 'MENTOR', isEmailVerified: true, passwordHash, avatarUrl: avatarFor('Rahul Mentor') },
     create: {
       email: 'mentor@skillforge.app',
       name: 'Rahul Mentor',
       role: 'MENTOR',
       passwordHash,
       isEmailVerified: true,
+      avatarUrl: avatarFor('Rahul Mentor'),
       bio: 'Serial small-business founder helping first-time entrepreneurs launch.',
       location: 'Bengaluru',
       profileCompletion: 100,
@@ -661,6 +670,7 @@ async function seedUsers(skills: { id: string; name: string }[]) {
       businessGoal: 'Start a home-based food business within three months.',
       readinessScore: 65,
       profileCompletion: 90,
+      avatarUrl: avatarFor('Priya Sharma'),
     },
     create: {
       email: 'priya@skillforge.app',
@@ -669,6 +679,7 @@ async function seedUsers(skills: { id: string; name: string }[]) {
       passwordHash,
       isEmailVerified: true,
       location: 'Pune',
+      avatarUrl: avatarFor('Priya Sharma'),
       budget: 50000,
       experienceLevel: 'BEGINNER',
       availableHours: 20,
@@ -718,6 +729,7 @@ async function seedBusinesses(
       growthPotential: b.growthPotential,
       targetCustomers: b.targetCustomers,
       toolsRequired: b.toolsRequired,
+      coverImage: `https://picsum.photos/seed/sf-${slug}/900/560`,
       status: 'PUBLISHED' as const,
       marketDemand: b.marketDemand,
       swot: b.swot,
@@ -798,6 +810,7 @@ async function seedResources(categories: { id: string; name: string }[]) {
       contentUrl: r.contentUrl ?? null,
       body: r.body ?? null,
       durationMin: r.durationMin ?? null,
+      thumbnail: `https://picsum.photos/seed/sfr-${slug}/640/400`,
       status: 'PUBLISHED' as const,
     };
 

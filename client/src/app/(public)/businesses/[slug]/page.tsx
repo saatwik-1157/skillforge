@@ -189,6 +189,14 @@ export default function BusinessDetailPage() {
         <div className="min-w-0">
           {/* Hero */}
           <div className="mb-8">
+            <div className="cover mb-6 h-56 w-full overflow-hidden rounded-3xl border border-border sm:h-72">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={b.coverImage ?? `https://picsum.photos/seed/sf-${b.slug}/1200/560`}
+                alt={b.title}
+                className="h-full w-full object-cover"
+              />
+            </div>
             <div className="mb-4 flex flex-wrap gap-2">
               <Badge variant="navy">{DIFFICULTY_LABELS[b.difficulty]}</Badge>
               <Badge variant="outline">{BUSINESS_TYPE_LABELS[b.businessType]}</Badge>
