@@ -65,10 +65,10 @@ export default function MentorsPage() {
     params.set('limit', '12');
 
     api
-      .get<MentorProfile[]>(`/mentors?${params.toString()}`, { auth: false })
+      .get<{ items: MentorProfile[] }>(`/mentors?${params.toString()}`, { auth: false })
       .then((res) => {
         if (!active) return;
-        setMentors(res.data);
+        setMentors(res.data.items);
         setPagination(res.meta?.pagination ?? null);
       })
       .catch((err) => {

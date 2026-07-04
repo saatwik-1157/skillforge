@@ -174,8 +174,8 @@ export default function RecommendationsPage() {
     setLoading(true);
     setError(null);
     api
-      .post<RecommendedBusiness[]>('/businesses/recommend', {})
-      .then((res) => setItems(res.data))
+      .post<{ items: RecommendedBusiness[] }>('/businesses/recommend', {})
+      .then((res) => setItems(res.data.items))
       .catch((err: unknown) => {
         const message = err instanceof Error ? err.message : 'Failed to load recommendations';
         setError(message);

@@ -20,8 +20,13 @@ import { useAuthStore } from '@/lib/auth';
 interface DashboardData {
   profileCompletion: number;
   readinessScore: number;
-  counts: { bookmarks: number; enrollmentsInProgress: number; enrollmentsCompleted: number; certificates: number; achievements: number };
-  roadmaps: { id: string; title: string; progress: number; businessSlug?: string }[];
+  counts: {
+    bookmarks: number;
+    enrollments: { inProgress: number; completed: number };
+    certificates: number;
+    achievements: number;
+  };
+  userRoadmaps: { id: string; roadmapId: string; title: string; progress: number; businessId?: string }[];
   upcomingSessions: { id: string; topic?: string; scheduledAt: string; mentorName?: string }[];
 }
 
@@ -66,7 +71,7 @@ export default function DashboardPage() {
 
   const stats = [
     { label: 'Saved Ideas', value: data?.counts.bookmarks ?? 0, icon: Bookmark, href: '/dashboard/bookmarks' },
-    { label: 'Courses In Progress', value: data?.counts.enrollmentsInProgress ?? 0, icon: GraduationCap, href: '/dashboard/learning' },
+    { label: 'Courses In Progress', value: data?.counts.enrollments.inProgress ?? 0, icon: GraduationCap, href: '/dashboard/learning' },
     { label: 'Certificates', value: data?.counts.certificates ?? 0, icon: Award, href: '/dashboard/certificates' },
     { label: 'Achievements', value: data?.counts.achievements ?? 0, icon: TrendingUp, href: '/dashboard/achievements' },
   ];
@@ -132,8 +137,8 @@ export default function DashboardPage() {
         <CardContent className="space-y-4">
           {loading ? (
             <div className="skeleton h-16 w-full" />
-          ) : data?.roadmaps?.length ? (
-            data.roadmaps.map((r) => (
+          ) : data?.userRoadmaps?.length ? (
+            data.userRoadmaps.map((r) => (
               <div key={r.id} className="space-y-1.5">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium">{r.title}</span>

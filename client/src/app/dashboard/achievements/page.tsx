@@ -40,9 +40,9 @@ export default function AchievementsPage() {
   React.useEffect(() => {
     let active = true;
     api
-      .get<UserAchievement[]>('/users/me/achievements')
+      .get<{ items: UserAchievement[] }>('/users/me/achievements')
       .then((res) => {
-        if (active) setItems(res.data);
+        if (active) setItems(res.data.items);
       })
       .catch((err) => {
         if (active) setError(err?.message ?? 'Failed to load achievements');

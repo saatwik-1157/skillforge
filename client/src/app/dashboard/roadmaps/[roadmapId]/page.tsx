@@ -84,9 +84,9 @@ export default function RoadmapDetailPage() {
     let active = true;
     setLoading(true);
     api
-      .get<UserRoadmapDetail>(`/roadmaps/me/${roadmapId}`)
+      .get<{ userRoadmap: UserRoadmapDetail }>(`/roadmaps/me/${roadmapId}`)
       .then((res) => {
-        if (active) setDetail(res.data);
+        if (active) setDetail(res.data.userRoadmap);
       })
       .catch((err) => {
         if (active) setError(err?.message ?? 'Failed to load this roadmap');

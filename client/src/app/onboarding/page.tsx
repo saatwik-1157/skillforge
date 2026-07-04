@@ -83,13 +83,13 @@ export default function OnboardingPage() {
   React.useEffect(() => {
     let active = true;
     Promise.all([
-      api.get<Skill[]>('/users/skills', { auth: false }),
-      api.get<Interest[]>('/users/interests', { auth: false }),
+      api.get<{ items: Skill[] }>('/users/skills', { auth: false }),
+      api.get<{ items: Interest[] }>('/users/interests', { auth: false }),
     ])
       .then(([sRes, iRes]) => {
         if (!active) return;
-        setSkills(sRes.data);
-        setInterests(iRes.data);
+        setSkills(sRes.data.items);
+        setInterests(iRes.data.items);
       })
       .catch((err) => toast.error(err?.message ?? 'Failed to load onboarding options'))
       .finally(() => {

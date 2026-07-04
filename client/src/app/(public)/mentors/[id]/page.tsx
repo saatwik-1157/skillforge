@@ -75,9 +75,9 @@ export default function MentorDetailPage() {
     setError(null);
 
     api
-      .get<MentorDetail>(`/mentors/${id}`, { auth: false })
+      .get<{ mentor: MentorDetail }>(`/mentors/${id}`, { auth: false })
       .then((res) => {
-        if (active) setMentor(res.data);
+        if (active) setMentor(res.data.mentor);
       })
       .catch((err) => {
         if (active) setError(err.message ?? 'Failed to load mentor');

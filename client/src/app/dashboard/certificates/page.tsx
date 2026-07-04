@@ -37,9 +37,9 @@ export default function CertificatesPage() {
   React.useEffect(() => {
     let alive = true;
     api
-      .get<Certificate[]>('/users/me/certificates')
+      .get<{ items: Certificate[] }>('/users/me/certificates')
       .then((res) => {
-        if (alive) setItems(res.data);
+        if (alive) setItems(res.data.items);
       })
       .catch((err) => {
         if (alive) setError(err?.message ?? 'Failed to load certificates');

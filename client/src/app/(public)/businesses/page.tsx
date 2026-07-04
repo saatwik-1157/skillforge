@@ -72,8 +72,8 @@ export default function BusinessesPage() {
   // Load categories once (public endpoint).
   React.useEffect(() => {
     api
-      .get<Category[]>('/businesses/categories', { auth: false })
-      .then((res) => setCategories(res.data))
+      .get<{ items: Category[] }>('/businesses/categories', { auth: false })
+      .then((res) => setCategories(res.data.items))
       .catch(() => setCategories([]));
   }, []);
 
@@ -102,11 +102,11 @@ export default function BusinessesPage() {
     setLoading(true);
     setError(null);
     api
-      .get<BusinessListItem[]>(`/businesses?${params.toString()}`, { auth: false })
+      .get<{ items: BusinessListItem[] }>(`/businesses?${params.toString()}`, { auth: false })
       .then((res) => {
         if (cancelled) return;
-        setItems(res.data);
-        setTotal(res.meta?.pagination?.total ?? res.data.length);
+        setItems(res.data.items);
+        setTotal(res.meta?.pagination?.total ?? res.data.items.length);
         setTotalPages(res.meta?.pagination?.totalPages ?? 1);
       })
       .catch((err: unknown) => {

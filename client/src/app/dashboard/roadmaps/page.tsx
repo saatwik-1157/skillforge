@@ -32,9 +32,9 @@ export default function RoadmapsPage() {
   React.useEffect(() => {
     let active = true;
     api
-      .get<UserRoadmapListItem[]>('/roadmaps/me')
+      .get<{ items: UserRoadmapListItem[] }>('/roadmaps/me')
       .then((res) => {
-        if (active) setItems(res.data);
+        if (active) setItems(res.data.items);
       })
       .catch((err) => {
         if (active) setError(err?.message ?? 'Failed to load your roadmaps');

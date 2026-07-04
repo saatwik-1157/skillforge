@@ -67,9 +67,9 @@ export default function BusinessDetailPage() {
     setError(null);
     setNotFound(false);
     api
-      .get<BusinessDetail>(`/businesses/${slug}`, { auth: false })
+      .get<{ business: BusinessDetail }>(`/businesses/${slug}`, { auth: false })
       .then((res) => {
-        if (!cancelled) setBusiness(res.data);
+        if (!cancelled) setBusiness(res.data.business);
       })
       .catch((err: unknown) => {
         if (cancelled) return;
