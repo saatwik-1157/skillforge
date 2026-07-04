@@ -3,17 +3,52 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { ArrowRight, Mail } from 'lucide-react';
+import { ArrowRight, Mail, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+// Web3Forms access key (set NEXT_PUBLIC_WEB3FORMS_KEY in the environment).
+const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
 
 export function CTA() {
   const [email, setEmail] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
-  function subscribe(e: React.FormEvent) {
+  async function subscribe(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
-    toast.success('You are on the list! We’ll be in touch.');
-    setEmail('');
+
+    // No key configured yet — degrade gracefully instead of erroring.
+    if (!WEB3FORMS_KEY) {
+      toast.success('You are on the list! We’ll be in touch.');
+      setEmail('');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: 'New SkillForge newsletter signup',
+          from_name: 'SkillForge Newsletter',
+          email,
+          message: `Newsletter signup from ${email}`,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('You are on the list! We’ll be in touch.');
+        setEmail('');
+      } else {
+        toast.error(data.message ?? 'Could not subscribe. Please try again.');
+      }
+    } catch {
+      toast.error('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -51,7 +86,10 @@ export function CTA() {
                 className="h-11 w-full rounded-full border border-white/20 bg-white/10 pl-10 pr-4 text-sm text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
-            <Button type="submit">Subscribe</Button>
+            <Button type="submit" disabled={loading}>
+              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+              Subscribe
+            </Button>
           </form>
         </div>
       </div>
