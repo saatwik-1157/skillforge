@@ -1,0 +1,20 @@
+# ============================================================================
+# SkillForge — Netlify config (FRONTEND ONLY)
+#
+# Netlify hosts the Next.js web app in /client. The Express API and the
+# PostgreSQL database CANNOT run on Netlify — deploy those on Render (see
+# render.yaml + DEPLOYMENT.md) and point the frontend at that API URL.
+#
+# After the API is live, set this env var in the Netlify UI
+# (Site settings -> Environment variables):
+#   NEXT_PUBLIC_API_URL = https://<your-api>.onrender.com/api/v1
+# and set CLIENT_URL on the API (Render) to your Netlify site URL (for CORS).
+# ============================================================================
+
+[build]
+  base = "client"
+  command = "npm run build"
+
+# Netlify's official Next.js runtime (SSR, image optimization, routing).
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

@@ -86,6 +86,31 @@ accounts:
 - **Prefer Vercel for the frontend?** Deploy `client/` to Vercel instead: set
   `NEXT_PUBLIC_API_URL` to the Render API URL, and set the API's `CLIENT_URL`
   to your Vercel domain. Keep the API + database on Render.
+
+---
+
+## Option B — Frontend on Netlify (+ API & database on Render)
+
+Netlify can host the **web app**, but not the API or database — so keep those on
+Render and point Netlify at them. (`netlify.toml` in this repo is already set up.)
+
+1. **API + database on Render.** Follow Steps 1–2 above, but you only need the
+   `skillforge-db` and `skillforge-api` services (you can delete the
+   `skillforge-web` service in the Blueprint, or just ignore it). Note the API
+   URL, e.g. `https://skillforge-api.onrender.com`.
+2. **Frontend on Netlify.** Netlify → **Add new site** → **Import from Git** →
+   pick the repo. Netlify reads `netlify.toml` (base = `client`) and detects
+   Next.js automatically.
+3. **Set the API URL on Netlify:** Site settings → Environment variables →
+   `NEXT_PUBLIC_API_URL = https://skillforge-api.onrender.com/api/v1` → then
+   **Trigger deploy** → **Clear cache and deploy site**.
+4. **Allow the Netlify origin on the API (CORS):** on the Render `skillforge-api`
+   service, set `CLIENT_URL = https://<your-site>.netlify.app` and let it restart.
+5. Open your Netlify URL and log in with the demo accounts above.
+
+> Why the split? Netlify runs static pages + short serverless functions — it has
+> nowhere to run a persistent Express server or a PostgreSQL database. The API and
+> database must live on a host built for that (Render, Railway, Fly, etc.).
 - **Custom domain:** add it on the `skillforge-web` service, then update the
   API's `CLIENT_URL` to match.
 
