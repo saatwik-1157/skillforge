@@ -84,18 +84,24 @@ export default function AchievementsPage() {
         />
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((ua) => (
+          {items.map((ua, i) => {
+            const grads = [
+              'gradient-warm',
+              'bg-gradient-to-br from-sky-500 to-indigo-500',
+              'bg-gradient-to-br from-emerald-500 to-teal-500',
+              'bg-gradient-to-br from-violet-500 to-purple-500',
+              'bg-gradient-to-br from-rose-500 to-pink-500',
+              'bg-gradient-to-br from-amber-500 to-orange-500',
+            ];
+            const grad = grads[i % grads.length];
+            return (
             <Card
               key={ua.achievementId}
-              className="relative overflow-hidden border-primary/30 bg-gradient-to-br from-primary/5 to-transparent"
+              className="relative overflow-hidden bg-gradient-to-br from-primary/5 to-transparent"
             >
+              <span aria-hidden className={cn('absolute inset-x-0 top-0 h-1.5', grad)} />
               <CardContent className="flex flex-col items-center p-6 text-center">
-                <div
-                  className={cn(
-                    'mb-4 flex h-16 w-16 items-center justify-center rounded-2xl text-3xl',
-                    'bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20',
-                  )}
-                >
+                <div className={cn('tile mb-4 h-16 w-16 text-3xl', grad)}>
                   {ua.achievement.icon ? (
                     <span aria-hidden>{ua.achievement.icon}</span>
                   ) : (
@@ -114,7 +120,8 @@ export default function AchievementsPage() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

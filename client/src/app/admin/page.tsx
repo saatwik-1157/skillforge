@@ -52,22 +52,19 @@ function Kpi({
   icon: Icon,
   label,
   value,
-  accent,
+  grad = 'bg-gradient-to-br from-slate-500 to-slate-600',
+  alert,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: number | string;
-  accent?: boolean;
+  grad?: string;
+  alert?: boolean;
 }) {
   return (
-    <Card className="rounded-2xl">
+    <Card className={cn('rounded-2xl transition-transform hover:-translate-y-0.5', alert && 'ring-2 ring-primary/40')}>
       <CardContent className="flex items-center gap-4 p-5">
-        <span
-          className={cn(
-            'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl',
-            accent ? 'bg-primary/10 text-primary' : 'bg-secondary text-foreground',
-          )}
-        >
+        <span className={cn('tile h-11 w-11 shrink-0', grad)}>
           <Icon className="h-5 w-5" />
         </span>
         <div className="min-w-0">
@@ -120,23 +117,25 @@ export default function AdminOverviewPage() {
         <div className="space-y-8">
           {/* Primary KPIs */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Kpi icon={Users} label="Total users" value={data.users.total} accent />
-            <Kpi icon={Lightbulb} label="Business ideas" value={data.businesses} />
-            <Kpi icon={GraduationCap} label="Learning resources" value={data.resources} />
-            <Kpi icon={ShieldCheck} label="Mentors" value={data.mentors.total} />
-            <Kpi icon={CalendarClock} label="Mentor sessions" value={data.sessions} />
-            <Kpi icon={MessagesSquare} label="Forum posts" value={data.forumPosts} />
+            <Kpi icon={Users} label="Total users" value={data.users.total} grad="gradient-warm" />
+            <Kpi icon={Lightbulb} label="Business ideas" value={data.businesses} grad="bg-gradient-to-br from-amber-500 to-orange-500" />
+            <Kpi icon={GraduationCap} label="Learning resources" value={data.resources} grad="bg-gradient-to-br from-sky-500 to-indigo-500" />
+            <Kpi icon={ShieldCheck} label="Mentors" value={data.mentors.total} grad="bg-gradient-to-br from-violet-500 to-purple-500" />
+            <Kpi icon={CalendarClock} label="Mentor sessions" value={data.sessions} grad="bg-gradient-to-br from-emerald-500 to-teal-500" />
+            <Kpi icon={MessagesSquare} label="Forum posts" value={data.forumPosts} grad="bg-gradient-to-br from-fuchsia-500 to-pink-500" />
             <Kpi
               icon={MessageSquareWarning}
               label="Open complaints"
               value={data.openComplaints}
-              accent={data.openComplaints > 0}
+              grad="bg-gradient-to-br from-rose-500 to-red-500"
+              alert={data.openComplaints > 0}
             />
             <Kpi
               icon={ShieldCheck}
               label="Mentors pending review"
               value={data.mentors.byVerificationStatus.PENDING}
-              accent={data.mentors.byVerificationStatus.PENDING > 0}
+              grad="bg-gradient-to-br from-cyan-500 to-blue-500"
+              alert={data.mentors.byVerificationStatus.PENDING > 0}
             />
           </div>
 

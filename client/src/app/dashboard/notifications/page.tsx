@@ -55,6 +55,16 @@ const TYPE_ICON: Record<NotificationType, React.ComponentType<{ className?: stri
   CERTIFICATE: FileText,
 };
 
+const TYPE_GRAD: Record<NotificationType, string> = {
+  SYSTEM: 'bg-gradient-to-br from-slate-500 to-slate-600',
+  ROADMAP: 'gradient-warm',
+  LEARNING: 'bg-gradient-to-br from-sky-500 to-indigo-500',
+  MENTOR: 'bg-gradient-to-br from-violet-500 to-purple-500',
+  COMMUNITY: 'bg-gradient-to-br from-fuchsia-500 to-pink-500',
+  ACHIEVEMENT: 'bg-gradient-to-br from-amber-500 to-orange-500',
+  CERTIFICATE: 'bg-gradient-to-br from-emerald-500 to-teal-500',
+};
+
 function timeAgo(iso: string) {
   const then = new Date(iso).getTime();
   const diff = Date.now() - then;
@@ -181,7 +191,9 @@ export default function NotificationsPage() {
                 <div
                   className={cn(
                     'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl',
-                    n.isRead ? 'bg-muted text-muted-foreground' : 'bg-primary/10 text-primary',
+                    n.isRead
+                      ? 'bg-muted text-muted-foreground'
+                      : cn('tile text-white', TYPE_GRAD[n.type] ?? 'gradient-warm'),
                   )}
                 >
                   <Icon className="h-5 w-5" />

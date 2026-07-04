@@ -160,33 +160,32 @@ export default function RoadmapDetailPage() {
     <div className="mx-auto max-w-3xl space-y-6">
       <BackLink />
 
-      {/* Header + overall progress */}
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-extrabold leading-tight">
+      {/* Gradient progress header */}
+      <div className="relative overflow-hidden rounded-3xl gradient-warm p-6 text-white shadow-xl sm:p-8">
+        <div className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-white/15 blur-2xl" />
+        <div className="relative flex flex-wrap items-end justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-white/80">Your roadmap</p>
+            <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">
               {detail.roadmap.business?.title ?? detail.roadmap.title}
             </h1>
-            {detail.roadmap.title !== detail.roadmap.business?.title && (
-              <p className="text-muted-foreground">{detail.roadmap.title}</p>
+            <p className="mt-1 text-sm text-white/80">
+              {completedCount} of {steps.length} steps completed
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="text-4xl font-extrabold tabular-nums">{detail.progress}%</span>
+            {detail.progress >= 100 && (
+              <p className="text-sm font-semibold text-white/90">🎉 Completed!</p>
             )}
           </div>
-          <Badge variant={detail.progress >= 100 ? 'success' : 'muted'}>
-            {detail.progress >= 100 ? 'Completed' : `${detail.progress}%`}
-          </Badge>
         </div>
-
-        <Card>
-          <CardContent className="space-y-2 py-5">
-            <div className="flex items-center justify-between text-sm font-medium">
-              <span>Overall progress</span>
-              <span className="text-muted-foreground">
-                {completedCount} / {steps.length} steps
-              </span>
-            </div>
-            <Progress value={detail.progress} />
-          </CardContent>
-        </Card>
+        <div className="relative mt-5 h-2.5 w-full overflow-hidden rounded-full bg-white/25">
+          <div
+            className="h-full rounded-full bg-white transition-all duration-700"
+            style={{ width: `${detail.progress}%` }}
+          />
+        </div>
       </div>
 
       {/* Vertical stepper */}
@@ -212,7 +211,7 @@ export default function RoadmapDetailPage() {
                     aria-hidden
                     className={cn(
                       'absolute left-4 top-9 -ml-px h-[calc(100%-1.25rem)] w-0.5',
-                      isCompleted ? 'bg-primary' : 'bg-border',
+                      isCompleted ? 'bg-gradient-to-b from-primary to-orange-400' : 'bg-border',
                     )}
                   />
                 )}
@@ -220,11 +219,11 @@ export default function RoadmapDetailPage() {
                 {/* node */}
                 <div
                   className={cn(
-                    'relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold',
+                    'relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold transition-all',
                     isCompleted
-                      ? 'border-primary bg-primary text-primary-foreground'
+                      ? 'gradient-warm border-transparent text-white shadow-lg shadow-primary/30'
                       : isInProgress
-                        ? 'border-primary bg-background text-primary'
+                        ? 'animate-pulse border-primary bg-primary/10 text-primary ring-4 ring-primary/15'
                         : 'border-border bg-background text-muted-foreground',
                   )}
                 >
