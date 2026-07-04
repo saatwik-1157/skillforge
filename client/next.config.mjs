@@ -2,6 +2,13 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  // When the client uses a relative API base ("/api/v1"), proxy those calls to
+  // the local API server. This lets a single public URL (e.g. a tunnel) serve
+  // the whole app with no CORS — the browser only ever talks to one origin.
+  async rewrites() {
+    const apiTarget = process.env.API_PROXY_TARGET || 'http://localhost:4055';
+    return [{ source: '/api/:path*', destination: `${apiTarget}/api/:path*` }];
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'res.cloudinary.com' },
