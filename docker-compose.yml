@@ -3,7 +3,6 @@
 # Brings up Postgres, the Express API, and the Next.js web app.
 # Usage: cp .env.example .env && docker compose up --build
 # ============================================================================
-version: "3.9"
 
 services:
   db:
