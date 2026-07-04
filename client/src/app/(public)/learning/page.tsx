@@ -48,14 +48,14 @@ interface ListResponse {
 
 const TYPE_META: Record<
   ResourceType,
-  { label: string; icon: React.ComponentType<{ className?: string }> }
+  { label: string; icon: React.ComponentType<{ className?: string }>; grad: string }
 > = {
-  VIDEO: { label: 'Video', icon: Video },
-  ARTICLE: { label: 'Article', icon: FileText },
-  PDF: { label: 'PDF', icon: FileType2 },
-  TEMPLATE: { label: 'Template', icon: LayoutTemplate },
-  WORKSHEET: { label: 'Worksheet', icon: BookOpen },
-  CHECKLIST: { label: 'Checklist', icon: ListChecks },
+  VIDEO: { label: 'Video', icon: Video, grad: 'bg-gradient-to-br from-rose-500 to-pink-500' },
+  ARTICLE: { label: 'Article', icon: FileText, grad: 'bg-gradient-to-br from-sky-500 to-indigo-500' },
+  PDF: { label: 'PDF', icon: FileType2, grad: 'bg-gradient-to-br from-orange-500 to-amber-500' },
+  TEMPLATE: { label: 'Template', icon: LayoutTemplate, grad: 'bg-gradient-to-br from-violet-500 to-purple-500' },
+  WORKSHEET: { label: 'Worksheet', icon: BookOpen, grad: 'bg-gradient-to-br from-emerald-500 to-teal-500' },
+  CHECKLIST: { label: 'Checklist', icon: ListChecks, grad: 'bg-gradient-to-br from-cyan-500 to-blue-500' },
 };
 
 const TYPE_FILTERS: ResourceType[] = [
@@ -91,7 +91,7 @@ function ResourceCard({ resource }: { resource: LearningResource }) {
           ) : (
             <Icon className="h-12 w-12 text-primary/40" />
           )}
-          <Badge variant="navy" className="absolute left-3 top-3 gap-1">
+          <Badge className={`absolute left-3 top-3 gap-1 border-0 text-white ${meta.grad}`}>
             <Icon className="h-3 w-3" />
             {meta.label}
           </Badge>

@@ -838,6 +838,157 @@ async function seedResources(categories: { id: string; name: string }[]) {
 }
 
 // ---------------------------------------------------------------------------
+// Community / Forum
+// ---------------------------------------------------------------------------
+
+const COMMUNITY_MEMBERS = [
+  { name: 'Ananya Rao', email: 'ananya@skillforge.app', location: 'Chennai' },
+  { name: 'Vikram Singh', email: 'vikram@skillforge.app', location: 'Jaipur' },
+  { name: 'Meera Joshi', email: 'meera@skillforge.app', location: 'Ahmedabad' },
+  { name: 'Karan Patel', email: 'karan@skillforge.app', location: 'Surat' },
+];
+
+const FORUM_POSTS: {
+  authorKey: string;
+  title: string;
+  body: string;
+  tags: string[];
+  isStory: boolean;
+  views: number;
+}[] = [
+  {
+    authorKey: 'priya@skillforge.app',
+    title: 'From my kitchen to ₹45,000/month — how I started home catering',
+    body: 'Three months ago I could only cook for my family. I started with 5 tiffin customers from my apartment WhatsApp group, followed the SkillForge roadmap step by step, and just crossed ₹45,000 in monthly revenue. Happy to answer any questions about FSSAI, pricing, or finding your first customers!',
+    tags: ['success-story', 'food', 'catering'],
+    isStory: true,
+    views: 1284,
+  },
+  {
+    authorKey: 'ananya@skillforge.app',
+    title: 'How do you price a product when you are just starting out?',
+    body: "I make handmade candles and I'm never sure what to charge. If I price too high nobody buys, too low and I make no profit. How did you all figure out your first pricing?",
+    tags: ['pricing', 'question', 'handicrafts'],
+    isStory: false,
+    views: 642,
+  },
+  {
+    authorKey: 'vikram@skillforge.app',
+    title: 'Do I really need GST registration for a small home business?',
+    body: 'My mentor said it depends on turnover. Can someone explain the threshold in simple terms and whether I should register early anyway?',
+    tags: ['gst', 'legal', 'question'],
+    isStory: false,
+    views: 903,
+  },
+  {
+    authorKey: 'meera@skillforge.app',
+    title: 'Landed my first 3 tailoring clients using only Instagram',
+    body: 'I posted before/after photos of alterations for 2 weeks, used local hashtags, and DMed 20 people. Got 3 paying clients! Consistency beats perfection. Sharing my exact content plan in the comments.',
+    tags: ['success-story', 'marketing', 'fashion'],
+    isStory: true,
+    views: 771,
+  },
+  {
+    authorKey: 'karan@skillforge.app',
+    title: 'Best free tools for designing a logo and packaging?',
+    body: 'Bootstrapping here. What free/cheap tools did you use for branding before you could afford a designer?',
+    tags: ['branding', 'tools', 'question'],
+    isStory: false,
+    views: 528,
+  },
+  {
+    authorKey: 'mentor@skillforge.app',
+    title: 'Mentor tip: talk to 10 customers before you spend a rupee',
+    body: 'The biggest mistake first-time founders make is building before validating. Before you buy equipment, have 10 real conversations with potential customers. If 3 say "I would pay for this today", you have a signal. If not, adjust.',
+    tags: ['validation', 'mentor-tip', 'strategy'],
+    isStory: false,
+    views: 1502,
+  },
+];
+
+async function seedForum(seedUsersResult: {
+  admin: { id: string };
+  mentor: { id: string };
+  priya: { id: string; email: string };
+}) {
+  const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
+
+  // Extra community members for author/avatar variety.
+  const memberByEmail = new Map<string, string>();
+  for (const m of COMMUNITY_MEMBERS) {
+    const user = await prisma.user.upsert({
+      where: { email: m.email },
+      update: { name: m.name, avatarUrl: avatarFor(m.name), location: m.location },
+      create: {
+        email: m.email,
+        name: m.name,
+        role: 'ENTREPRENEUR',
+        passwordHash,
+        isEmailVerified: true,
+        location: m.location,
+        avatarUrl: avatarFor(m.name),
+        profileCompletion: 60,
+      },
+    });
+    memberByEmail.set(m.email, user.id);
+  }
+
+  const authorId = (key: string) => {
+    if (key === 'priya@skillforge.app') return seedUsersResult.priya.id;
+    if (key === 'mentor@skillforge.app') return seedUsersResult.mentor.id;
+    if (key === 'admin@skillforge.app') return seedUsersResult.admin.id;
+    return memberByEmail.get(key)!;
+  };
+
+  const allAuthorIds = [
+    seedUsersResult.priya.id,
+    seedUsersResult.mentor.id,
+    ...memberByEmail.values(),
+  ];
+
+  for (const p of FORUM_POSTS) {
+    const slug = slugify(p.title);
+    const post = await prisma.forumPost.upsert({
+      where: { slug },
+      update: { title: p.title, body: p.body, tags: p.tags, isStory: p.isStory, viewCount: p.views },
+      create: {
+        authorId: authorId(p.authorKey),
+        title: p.title,
+        slug,
+        body: p.body,
+        tags: p.tags,
+        isStory: p.isStory,
+        viewCount: p.views,
+      },
+    });
+
+    // Reset + reseed a couple of comments per post.
+    await prisma.comment.deleteMany({ where: { postId: post.id } });
+    const commenters = allAuthorIds.filter((id) => id !== post.authorId).slice(0, 2);
+    for (const [idx, cid] of commenters.entries()) {
+      await prisma.comment.create({
+        data: {
+          postId: post.id,
+          authorId: cid,
+          body:
+            idx === 0
+              ? 'This is so helpful — thank you for sharing your numbers, most people keep them secret!'
+              : 'Following this. Exactly the question I had on my mind. 🙌',
+        },
+      });
+    }
+
+    // Likes from a subset of members.
+    await prisma.postLike.deleteMany({ where: { postId: post.id } });
+    for (const uid of allAuthorIds.filter((id) => id !== post.authorId).slice(0, 3)) {
+      await prisma.postLike.create({ data: { postId: post.id, userId: uid } });
+    }
+  }
+
+  return prisma.forumPost.count();
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -869,6 +1020,9 @@ async function main() {
   const resources = await seedResources(categories);
   const lessons = await prisma.lesson.count();
   console.log(`  ✓ ${resources.length} learning resources (${lessons} lessons)`);
+
+  const posts = await seedForum(users);
+  console.log(`  ✓ ${posts} community posts (+ ${COMMUNITY_MEMBERS.length} members)`);
 
   console.log('✅ Seed complete.');
 }
