@@ -6,6 +6,9 @@ const nextConfig = {
   // the local API server. This lets a single public URL (e.g. a tunnel) serve
   // the whole app with no CORS — the browser only ever talks to one origin.
   async rewrites() {
+    // On Netlify, netlify.toml routes /api/* to the serverless function, so skip
+    // the dev proxy there. Locally, proxy /api/* to the running API server.
+    if (process.env.NETLIFY) return [];
     const apiTarget = process.env.API_PROXY_TARGET || 'http://localhost:4055';
     return [{ source: '/api/:path*', destination: `${apiTarget}/api/:path*` }];
   },

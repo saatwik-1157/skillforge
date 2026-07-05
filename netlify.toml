@@ -1,20 +1,41 @@
 # ============================================================================
-# SkillForge — Netlify config (FRONTEND ONLY)
+# SkillForge — Netlify config (frontend + API function; database on Supabase)
 #
-# Netlify hosts the Next.js web app in /client. The Express API and the
-# PostgreSQL database CANNOT run on Netlify — deploy those on Render (see
-# render.yaml + DEPLOYMENT.md) and point the frontend at that API URL.
+# Netlify hosts BOTH the Next.js web app AND the Express API (as a serverless
+# function). The database is Supabase. No Render.
 #
-# After the API is live, set this env var in the Netlify UI
-# (Site settings -> Environment variables):
-#   NEXT_PUBLIC_API_URL = https://<your-api>.onrender.com/api/v1
-# and set CLIENT_URL on the API (Render) to your Netlify site URL (for CORS).
+# Required environment variables (Site settings -> Environment variables):
+#   DATABASE_URL          Supabase pooler connection string
+#   DIRECT_URL            Supabase session/direct connection string
+#   JWT_ACCESS_SECRET     any long random string
+#   JWT_REFRESH_SECRET    any long random string
+#   NODE_ENV              production
+#   NEXT_PUBLIC_API_URL   /api/v1
+#   NEXT_PUBLIC_WEB3FORMS_KEY  your Web3Forms key
 # ============================================================================
 
 [build]
   base = "client"
-  command = "npm run build"
+  # Install the server's deps (needed to bundle the API), then build client (which
+  # bundles the API into a function + generates Prisma + builds Next.js).
+  command = "cd ../server && npm install --no-audit --no-fund && cd ../client && npm run build"
 
-# Netlify's official Next.js runtime (SSR, image optimization, routing).
+[build.environment]
+  # Frontend talks to the API same-origin (the /api/* redirect -> function).
+  NEXT_PUBLIC_API_URL = "/api/v1"
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[functions]
+  node_bundler = "esbuild"
+  # Keep Prisma Client external and ship the generated client + engine alongside it.
+  external_node_modules = ["@prisma/client", ".prisma/client"]
+  included_files = ["node_modules/.prisma/client/**"]
+
+# Route all API calls to the Express function.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
