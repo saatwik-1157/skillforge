@@ -14,10 +14,18 @@ const envSchema = z.object({
   API_PREFIX: z.string().default('/api/v1'),
   CLIENT_URL: z.string().default('http://localhost:3000'),
 
-  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  // Fallback defaults let the deployed app run without dashboard env vars.
+  // Override them by setting the matching environment variable in your host.
+  // (Repo is private to keep these values from being public.)
+  DATABASE_URL: z
+    .string()
+    .min(1)
+    .default(
+      'postgresql://postgres.umzalkqpjqqntgydlwbv:saathwik5567@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres',
+    ),
 
-  JWT_ACCESS_SECRET: z.string().min(1, 'JWT_ACCESS_SECRET is required'),
-  JWT_REFRESH_SECRET: z.string().min(1, 'JWT_REFRESH_SECRET is required'),
+  JWT_ACCESS_SECRET: z.string().min(1).default('skillforge-access-9f3k2p8x1q-prod-default'),
+  JWT_REFRESH_SECRET: z.string().min(1).default('skillforge-refresh-7h5m4v2n6b-prod-default'),
   JWT_ACCESS_EXPIRES: z.string().default('15m'),
   JWT_REFRESH_EXPIRES: z.string().default('7d'),
   BCRYPT_ROUNDS: z.coerce.number().default(12),

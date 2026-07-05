@@ -26,6 +26,8 @@
 [build.environment]
   # Frontend talks to the API same-origin (the /api/* redirect -> function).
   NEXT_PUBLIC_API_URL = "/api/v1"
+  # Web3Forms is a public form-access key (safe to expose); powers the newsletter form.
+  NEXT_PUBLIC_WEB3FORMS_KEY = "c03a7342-a0e7-44aa-869e-1dc50d67bc29"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
