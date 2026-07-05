@@ -89,6 +89,11 @@ export function Footer() {
             Designed &amp; Developed by{' '}
             <span className="font-bold text-primary">V. Saatwik Sairaam</span>
           </p>
+          <p className="mt-1 text-xs text-white/60">
+            <a href="mailto:saathwik.13@gmail.com" className="hover:text-primary">
+              saathwik.13@gmail.com
+            </a>
+          </p>
           <p className="mt-1 text-xs text-white/50">All Rights Reserved</p>
         </div>
       </div>
