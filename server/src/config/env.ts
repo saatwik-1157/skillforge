@@ -42,9 +42,12 @@ const envSchema = z.object({
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
+  const fields = parsed.error.flatten().fieldErrors;
   // eslint-disable-next-line no-console
-  console.error('❌ Invalid environment variables:', parsed.error.flatten().fieldErrors);
-  process.exit(1);
+  console.error('❌ Invalid environment variables:', fields);
+  // Throw (don't process.exit) so a serverless host can surface a clean error
+  // response instead of an opaque crash.
+  throw new Error('Invalid/missing environment variables: ' + Object.keys(fields).join(', '));
 }
 
 export const env = parsed.data;

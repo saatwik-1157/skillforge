@@ -21,7 +21,7 @@ server/prisma/*.db
 # Generated serverless-API artifacts (rebuilt by `npm run build:api`)
 client/netlify/functions/_server.cjs
 client/prisma/
-client/scripts/test-fn.mjs
+client/scripts/test-*.mjs
 
 # Logs
 logs/
