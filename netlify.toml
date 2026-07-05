@@ -16,6 +16,9 @@
 
 [build]
   base = "client"
+  # Publish dir MUST differ from base (client) or @netlify/plugin-nextjs errors.
+  # ".next" is relative to base -> client/.next (the Next build output).
+  publish = ".next"
   # Install the server's deps (needed to bundle the API), then build client (which
   # bundles the API into a function + generates Prisma + builds Next.js).
   command = "cd ../server && npm install --no-audit --no-fund && cd ../client && npm run build"
