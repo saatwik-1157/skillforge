@@ -80,7 +80,7 @@ export default function MentorApplyPage() {
         ) : (
           <div className="mx-auto max-w-2xl">
             <div className="mb-8 text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-orange-700 dark:text-primary">
                 <GraduationCap className="h-7 w-7" />
               </div>
               <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">

@@ -194,7 +194,7 @@ export default function LearningPage() {
           className={cn(
             'rounded-full border px-4 py-1.5 text-sm font-medium transition-colors',
             activeType === null
-              ? 'border-primary bg-primary text-primary-foreground'
+              ? 'border-primary bg-orange-700 text-white dark:bg-primary dark:text-primary-foreground'
               : 'border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground'
           )}
         >
@@ -212,7 +212,7 @@ export default function LearningPage() {
               className={cn(
                 'flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors',
                 active
-                  ? 'border-primary bg-primary text-primary-foreground'
+                  ? 'border-primary bg-orange-700 text-white dark:bg-primary dark:text-primary-foreground'
                   : 'border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground'
               )}
             >
@@ -238,11 +238,14 @@ export default function LearningPage() {
           description="Try a different search term or filter."
         />
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <>
+          <h2 className="sr-only">Learning resources</h2>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((r) => (
             <ResourceCard key={r.id} resource={r} />
           ))}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

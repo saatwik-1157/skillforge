@@ -145,7 +145,7 @@ export default function BusinessesPage() {
     <div className="container-page py-12 sm:py-16">
       {/* Hero */}
       <div className="mb-10 max-w-2xl">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-orange-700 dark:text-primary">
           <Sparkles className="h-4 w-4" />
           Explore proven business ideas
         </div>
@@ -312,6 +312,7 @@ export default function BusinessesPage() {
             />
           ) : (
             <>
+              <h2 className="sr-only">Business ideas</h2>
               <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 {items.map((b) => (
                   <BusinessCard key={b.id} business={b} />

@@ -49,7 +49,7 @@ export default function VerifyEmailPage() {
   return (
     <Card>
       <CardHeader>
-        <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-orange-700 dark:text-primary">
           <ShieldCheck className="h-6 w-6" />
         </div>
         <CardTitle className="text-2xl">Verify your email</CardTitle>
@@ -94,7 +94,7 @@ export default function VerifyEmailPage() {
           <span className="text-muted-foreground">Verify later?</span>
           <Link
             href={user ? '/onboarding' : '/login'}
-            className="font-semibold text-primary hover:underline"
+            className="font-semibold text-orange-700 dark:text-primary hover:underline"
           >
             Skip for now
           </Link>

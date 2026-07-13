@@ -232,7 +232,7 @@ export default function ResourceDetailPage() {
                     key={lesson.id}
                     className="flex items-center gap-3 rounded-xl px-3 py-3 hover:bg-muted/50"
                   >
-                    <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                    <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-orange-700 dark:text-primary">
                       {idx + 1}
                     </span>
                     <PlayCircle className="h-4 w-4 flex-none text-muted-foreground" />

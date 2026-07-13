@@ -316,7 +316,7 @@ export default function CommunityPage() {
                       className={cn(
                         'inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors',
                         activeTag === t.tag
-                          ? 'border-primary bg-primary/10 text-primary'
+                          ? 'border-primary bg-primary/10 text-orange-700 dark:text-primary'
                           : 'border-border text-muted-foreground hover:border-primary/40 hover:text-foreground',
                       )}
                     >

@@ -163,6 +163,7 @@ export default function MentorsPage() {
         />
       ) : (
         <>
+          <h2 className="sr-only">Mentors</h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {mentors.map((m) => (
               <MentorCard key={m.id} mentor={m} />

@@ -94,7 +94,7 @@ export function Certificate({ data }: { data: CertificateData }) {
         <span className="pointer-events-none absolute bottom-2 right-2 h-8 w-8 rounded-br-md border-b-2 border-r-2 border-primary" />
 
         <div className="text-center text-navy">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-orange-700 dark:text-primary">
             <Award className="h-8 w-8" />
           </div>
 

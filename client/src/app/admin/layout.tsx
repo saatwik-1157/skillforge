@@ -72,7 +72,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className={cn(
                   'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors',
                   active
-                    ? 'bg-primary/10 text-primary'
+                    ? 'bg-primary/10 text-orange-700 dark:text-primary'
                     : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
                 )}
               >
@@ -115,7 +115,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     href={item.href}
                     className={cn(
                       'flex h-9 w-9 items-center justify-center rounded-lg transition-colors',
-                      active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-secondary',
+                      active ? 'bg-primary/10 text-orange-700 dark:text-primary' : 'text-muted-foreground hover:bg-secondary',
                     )}
                     aria-label={item.label}
                   >

@@ -59,7 +59,7 @@ export default function LoginPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link href="/forgot-password" className="text-xs text-primary hover:underline">
+              <Link href="/forgot-password" className="text-xs text-orange-700 dark:text-primary hover:underline">
                 Forgot?
               </Link>
             </div>
@@ -80,7 +80,7 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           New to SkillForge?{' '}
-          <Link href="/register" className="font-semibold text-primary hover:underline">
+          <Link href="/register" className="font-semibold text-orange-700 dark:text-primary hover:underline">
             Create an account
           </Link>
         </p>

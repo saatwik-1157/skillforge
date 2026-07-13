@@ -223,7 +223,7 @@ export default function RoadmapDetailPage() {
                     isCompleted
                       ? 'gradient-warm border-transparent text-white shadow-lg shadow-primary/30'
                       : isInProgress
-                        ? 'animate-pulse border-primary bg-primary/10 text-primary ring-4 ring-primary/15'
+                        ? 'animate-pulse border-primary bg-primary/10 text-orange-700 dark:text-primary ring-4 ring-primary/15'
                         : 'border-border bg-background text-muted-foreground',
                   )}
                 >
