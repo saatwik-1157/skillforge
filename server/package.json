@@ -5,6 +5,9 @@
   "author": "V. Saatwik Sairaam",
   "license": "MIT",
   "main": "dist/index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",

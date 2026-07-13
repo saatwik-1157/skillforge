@@ -4,6 +4,9 @@
   "description": "SkillForge web app — Next.js 15 + React 19 + Tailwind (+ bundled API function)",
   "author": "V. Saatwik Sairaam",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build:api": "node scripts/prepare-api.mjs",
