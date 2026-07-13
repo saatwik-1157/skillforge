@@ -195,7 +195,7 @@ export function FeaturedIdeas() {
                     <span className="flex items-center gap-1.5 text-muted-foreground">
                       <Wallet className="h-4 w-4" /> {idea.invest}
                     </span>
-                    <span className="flex items-center gap-1.5 font-semibold text-emerald-500">
+                    <span className="flex items-center gap-1.5 font-semibold text-emerald-700 dark:text-emerald-500">
                       <TrendingUp className="h-4 w-4" /> {idea.profit}
                     </span>
                   </div>

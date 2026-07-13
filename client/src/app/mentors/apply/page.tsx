@@ -74,7 +74,7 @@ export default function MentorApplyPage() {
   return (
     <>
       <Navbar />
-      <main className="container-page py-16">
+      <main id="main-content" className="container-page py-16">
         {!isAuthenticated ? (
           <Spinner />
         ) : (

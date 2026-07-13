@@ -22,7 +22,7 @@ export function Hero() {
           transition={{ duration: 0.6 }}
           className="flex flex-col justify-center"
         >
-          <Badge className="w-fit gap-1.5 bg-gradient-to-r from-primary/15 to-violet-500/15 text-primary">
+          <Badge className="w-fit gap-1.5 bg-gradient-to-r from-primary/15 to-violet-500/15 text-orange-700 dark:text-primary">
             <Sparkles className="h-3.5 w-3.5" /> Your startup accelerator, in your pocket
           </Badge>
 
@@ -107,7 +107,7 @@ export function Hero() {
                 <span className="tile h-10 w-10 gradient-warm">
                   <TrendingUp className="h-5 w-5" />
                 </span>
-                <span className="text-2xl font-extrabold text-emerald-500">94%</span>
+                <span className="text-2xl font-extrabold text-emerald-600">94%</span>
               </div>
               <p className="mt-3 text-sm font-semibold">Skill match</p>
               <p className="text-xs text-muted-foreground">Cooking · Baking · Marketing</p>

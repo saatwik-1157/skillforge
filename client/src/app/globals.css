@@ -143,6 +143,26 @@
   --a-fuchsia: 291 64% 55%;
 }
 
+/* Accessibility: skip-to-content link (first focusable element) */
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  border-radius: 0.625rem;
+  padding: 0.625rem 1.125rem;
+  font-weight: 700;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.25);
+  transition: top 0.18s ease;
+}
+.skip-link:focus {
+  top: 1rem;
+  outline: 3px solid hsl(var(--background));
+  outline-offset: 2px;
+}
+
 /* Loading skeleton shimmer */
 .skeleton {
   @apply relative overflow-hidden rounded-md bg-muted;
