@@ -80,9 +80,10 @@ accounts:
 
 - **Speed up cold starts:** once seeded, edit `render.yaml` and remove
   `&& npm run seed` from the API `startCommand` (migrations still run).
-- **Real email / uploads / Google login:** add `SMTP_*`, `CLOUDINARY_*`,
-  `GOOGLE_CLIENT_ID/SECRET` env vars on the API (and
-  `NEXT_PUBLIC_GOOGLE_CLIENT_ID` on the web) — see `.env.example`.
+- **Real email / uploads / Google login (all optional):** the app runs fine
+  without them. To turn them on, follow **[`INTEGRATIONS.md`](./INTEGRATIONS.md)** —
+  a per-integration checklist (SMTP, Cloudinary, Google OAuth) with where to get
+  each key and which service to set it on.
 - **Prefer Vercel for the frontend?** Deploy `client/` to Vercel instead: set
   `NEXT_PUBLIC_API_URL` to the Render API URL, and set the API's `CLIENT_URL`
   to your Vercel domain. Keep the API + database on Render.
