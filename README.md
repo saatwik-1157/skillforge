@@ -6,7 +6,7 @@
 > from your skills and budget, learn the essentials, follow a step-by-step
 > roadmap, connect with mentors, and launch your micro-enterprise.
 >
-> **Designed & Developed by V. Saatwik Sairaam.**
+> **Designed & Developed by Saatwik Sairaam Vasamsetti.**
 
 ![stack](https://img.shields.io/badge/Next.js-15-black) ![react](https://img.shields.io/badge/React-19-149eca) ![node](https://img.shields.io/badge/Express-4-000000) ![db](https://img.shields.io/badge/PostgreSQL-16-336791) ![orm](https://img.shields.io/badge/Prisma-5-2d3748) ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -63,10 +63,9 @@ Each backend module follows the same shape:
 
 ## 🚀 Getting Started
 
-> **Prerequisite:** Node.js 20+ and npm must be installed, plus either a local
-> PostgreSQL 16 or Docker. (This repo was authored without a local Node
-> toolchain, so run the install/generate/migrate steps below on your machine to
-> produce `node_modules` and the generated Prisma client before first run.)
+> **Prerequisite:** Node.js 20+ and npm, plus either a local PostgreSQL 16 or
+> Docker. `node_modules` and the generated Prisma client are not committed, so
+> run the install / generate / migrate steps below once before the first start.
 
 ### Option A — Docker (everything at once)
 
@@ -127,8 +126,15 @@ All variables are documented in [`.env.example`](.env.example). Key ones:
 
 ```bash
 cd server
-npm test          # vitest — recommendation scoring + auth utils
+npm test          # vitest — 9 tests across 2 files
 ```
+
+Covers the business-idea recommendation scoring (`business.service.test.ts`)
+and the password hashing/verification helpers (`password.test.ts`). Neither
+needs a database, so the suite runs on a clean checkout after `npm install`.
+
+The Next.js client has no test suite; `npm run build` in `client/` is the check
+that it compiles — it exercises every route through static prerendering.
 
 ---
 
@@ -161,4 +167,4 @@ Zod input validation · role-based access control · secure Cloudinary uploads.
 
 ## 📜 License
 
-MIT © 2026 SkillForge — Designed & Developed by **V. Saatwik Sairaam**. All Rights Reserved.
+MIT © 2026 SkillForge — Designed & Developed by **Saatwik Sairaam Vasamsetti**. All Rights Reserved.
