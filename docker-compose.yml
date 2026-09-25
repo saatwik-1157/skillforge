@@ -34,6 +34,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-skillforge}:${POSTGRES_PASSWORD:-skillforge}@db:5432/${POSTGRES_DB:-skillforge}?schema=public
+      # Required by apps/api/prisma/schema.prisma (directUrl) — `prisma migrate deploy` fails without it.
+      DIRECT_URL: postgresql://${POSTGRES_USER:-skillforge}:${POSTGRES_PASSWORD:-skillforge}@db:5432/${POSTGRES_DB:-skillforge}?schema=public
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 4000
       CLIENT_URL: ${CLIENT_URL:-http://localhost:3000}
@@ -47,6 +49,9 @@ services:
     build:
       context: ./apps/web
       dockerfile: Dockerfile
+      args:
+        # NEXT_PUBLIC_* is inlined at build time, so it must be a build arg.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000/api/v1}
     container_name: skillforge-web
     restart: unless-stopped
     depends_on:

@@ -1,5 +1,8 @@
 # ---- Build stage ----
 FROM node:20-alpine AS builder
+# Prisma needs OpenSSL present at generate time to pick the openssl-3 musl
+# engine; without it, it falls back to an openssl-1.1 engine that alpine lacks.
+RUN apk add --no-cache openssl
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -10,6 +13,7 @@ RUN npm run build
 
 # ---- Runtime stage ----
 FROM node:20-alpine AS runner
+RUN apk add --no-cache openssl
 WORKDIR /app
 ENV NODE_ENV=production
 COPY package*.json ./

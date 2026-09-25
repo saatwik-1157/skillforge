@@ -1,7 +1,15 @@
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  // Pin file tracing to this app. The repo root has its own package-lock.json
+  // (root dev tooling); Next infers the workspace root from lockfiles, and a
+  // repo-root guess would change the .next/standalone layout the Dockerfile
+  // copies (it expects .next/standalone/server.js).
+  outputFileTracingRoot: dirname(fileURLToPath(import.meta.url)),
   // When the client uses a relative API base ("/api/v1"), proxy those calls to
   // the local API server. This lets a single public URL (e.g. a tunnel) serve
   // the whole app with no CORS — the browser only ever talks to one origin.
