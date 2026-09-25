@@ -25,7 +25,7 @@ services:
 
   api:
     build:
-      context: ./server
+      context: ./apps/api
       dockerfile: Dockerfile
     container_name: skillforge-api
     restart: unless-stopped
@@ -45,7 +45,7 @@ services:
 
   web:
     build:
-      context: ./client
+      context: ./apps/web
       dockerfile: Dockerfile
     container_name: skillforge-web
     restart: unless-stopped

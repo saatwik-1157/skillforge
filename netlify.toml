@@ -15,13 +15,13 @@
 # ============================================================================
 
 [build]
-  base = "client"
-  # Publish dir MUST differ from base (client) or @netlify/plugin-nextjs errors.
-  # ".next" is relative to base -> client/.next (the Next build output).
+  base = "apps/web"
+  # Publish dir MUST differ from base (apps/web) or @netlify/plugin-nextjs errors.
+  # ".next" is relative to base -> apps/web/.next (the Next build output).
   publish = ".next"
-  # Install the server's deps (needed to bundle the API), then build client (which
+  # Install the API's deps (needed to bundle it), then build the web app (which
   # bundles the API into a function + generates Prisma + builds Next.js).
-  command = "cd ../server && npm install --no-audit --no-fund && cd ../client && npm run build"
+  command = "cd ../api && npm install --no-audit --no-fund && cd ../web && npm run build"
 
 [build.environment]
   # Frontend talks to the API same-origin (the /api/* redirect -> function).
@@ -36,6 +36,7 @@
   node_bundler = "esbuild"
   # Keep Prisma Client external and ship the generated client + engine alongside it.
   external_node_modules = ["@prisma/client", ".prisma/client"]
+  # Paths here are relative to base (apps/web).
   included_files = ["node_modules/.prisma/client/**"]
 
 # Route all API calls to the Express function.
