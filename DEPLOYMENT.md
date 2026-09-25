@@ -111,8 +111,10 @@ for Supabase).
 2. **Site.** Netlify → **Add new site** → **Import from Git** → pick the repo.
    Netlify reads `netlify.toml`: `base = "apps/web"`, build command
    `cd ../api && npm install … && cd ../web && npm run build`, publish `.next`.
-   If the site already exists, check **Site configuration → Build & deploy →
-   Base directory** is `apps/web` (or empty so the toml value applies).
+   If the site already exists, open **Site configuration → Build & deploy →
+   Build settings** and make sure **Base directory**, **Publish directory** and
+   **Functions directory** are empty (so the repo-root `netlify.toml` applies) —
+   an old UI value such as `client` points at a folder that no longer exists.
 3. **Environment variables** (Site configuration → Environment variables):
    `DATABASE_URL` (pooler string), `DIRECT_URL` (direct/session string),
    `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `NODE_ENV=production`.
