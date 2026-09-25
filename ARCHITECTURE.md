@@ -78,14 +78,18 @@ skillforge/
 ├── ARCHITECTURE.md            # this document
 ├── README.md                  # setup, deploy, API overview
 ├── docker-compose.yml         # postgres + api + web
-├── .env.example
+├── render.yaml · netlify.toml # deploy configs
+├── package.json               # root scripts (delegate to each app via npm --prefix)
+├── .env.example               # docker compose variables
 │
-├── server/                    # Express + TypeScript + Prisma API
+├── apps/api/                  # Express + TypeScript + Prisma API
 │   ├── package.json
 │   ├── tsconfig.json
 │   ├── Dockerfile
+│   ├── .env.example
 │   ├── prisma/
 │   │   ├── schema.prisma      # single source of truth for the data model
+│   │   ├── migrations/
 │   │   └── seed.ts            # demo users, businesses, mentors, roadmaps...
 │   └── src/
 │       ├── index.ts           # process entry (starts http server)
@@ -107,6 +111,7 @@ skillforge/
 │       │   ├── password.ts
 │       │   ├── logger.ts
 │       │   ├── mailer.ts
+│       │   ├── pagination.ts
 │       │   └── cloudinary.ts
 │       ├── modules/
 │       │   ├── auth/          # register, login, refresh, otp, google
@@ -123,12 +128,15 @@ skillforge/
 │       └── routes/
 │           └── index.ts       # mounts every module router under /api/v1
 │
-└── client/                    # Next.js 15 (App Router) frontend
+└── apps/web/                  # Next.js 15 (App Router) frontend
     ├── package.json
     ├── tsconfig.json
-    ├── next.config.mjs
+    ├── next.config.mjs        # standalone output + /api/* dev proxy
     ├── tailwind.config.ts     # orange + navy + white design tokens
     ├── Dockerfile
+    ├── .env.example
+    ├── netlify/functions/     # api.js — Express API as a Netlify Function
+    ├── scripts/prepare-api.mjs # bundles ../api/src/app.ts for that function
     └── src/
         ├── app/               # routes (landing, auth, dashboards, ...)
         │   ├── layout.tsx     # root layout (theme provider + footer)
@@ -143,8 +151,7 @@ skillforge/
         │   ├── api.ts         # typed fetch client (attaches access token)
         │   ├── auth.ts        # client auth store / helpers
         │   └── utils.ts       # cn(), formatters
-        ├── hooks/             # useAuth, useDebounce, useIntersection...
-        └── types/             # shared DTO types mirroring the API
+        └── hooks/             # useAuth
 ```
 
 ### One module, one shape
@@ -205,9 +212,9 @@ predictable:
 
 ## 6. Testing Strategy
 
-- **Unit** — services and utilities (recommendation scoring, readiness score,
-  jwt/password helpers) with mocked repositories.
-- **Integration** — module routes against a test Postgres (supertest).
-- **API** — end-to-end auth + business + roadmap happy paths.
+- **Implemented today** — Vitest unit tests in `apps/api` for the recommendation
+  scoring (`business.service.test.ts`) and password helpers (`password.test.ts`).
+- **Planned, not yet present** — route-level integration tests against a test
+  Postgres, and end-to-end auth + business + roadmap happy paths.
 
 See `README.md` for commands.
