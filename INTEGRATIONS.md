@@ -7,7 +7,7 @@ changing API env vars the service auto-restarts; changing the one `NEXT_PUBLIC_*
 var requires a **web** rebuild (see note at the bottom).
 
 > Values marked `sync: false` / left blank in `render.yaml` are the ones you fill
-> in here. Secrets: never commit real values — `server/.env` is git-ignored.
+> in here. Secrets: never commit real values — `apps/api/.env` is git-ignored.
 
 ---
 
@@ -88,7 +88,7 @@ Then set:
 | --- | --- | --- |
 | `GOOGLE_CLIENT_ID` | `skillforge-api` | the OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | `skillforge-api` | the OAuth client secret |
-| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | `skillforge-web` | the **same** client ID (public) |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | `skillforge-web` | the **same** client ID (public) — note: the web app does not read this variable yet; `POST /auth/google` exists on the API but there is no Google button wired up in `apps/web` |
 
 - [ ] OAuth client created with the correct origins/redirects
 - [ ] `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` set on `skillforge-api`

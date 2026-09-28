@@ -22,7 +22,7 @@ services:
     name: skillforge-api
     runtime: node
     plan: free
-    rootDir: server
+    rootDir: apps/api
     # --include=dev forces devDependencies (typescript, prisma, tsx) even though
     # NODE_ENV=production is set for runtime.
     buildCommand: npm install --include=dev && npx prisma generate && npm run build
@@ -32,6 +32,13 @@ services:
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
+        fromDatabase:
+          name: skillforge-db
+          property: connectionString
+      # schema.prisma declares directUrl = env("DIRECT_URL"); the Prisma CLI
+      # (migrate deploy) refuses to run if it is unset. On Render the direct and
+      # pooled connection are the same database URL.
+      - key: DIRECT_URL
         fromDatabase:
           name: skillforge-db
           property: connectionString
@@ -59,7 +66,7 @@ services:
     name: skillforge-web
     runtime: node
     plan: free
-    rootDir: client
+    rootDir: apps/web
     buildCommand: npm install && npm run build
     startCommand: npm run start
     envVars:

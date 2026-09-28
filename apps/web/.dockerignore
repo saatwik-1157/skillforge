@@ -1,0 +1,11 @@
+# Keep the build context small and host-independent. Without this, `COPY . .`
+# ships the host's node_modules, the .next build cache and .env.local into the image.
+node_modules
+.next
+.env
+.env.*
+!.env.example
+netlify/functions/_server.cjs
+prisma
+*.tsbuildinfo
+*.log

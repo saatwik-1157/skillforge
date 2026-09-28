@@ -24,7 +24,8 @@ EMER = HexColor(0x10B981)
 SKY = HexColor(0x0EA5E9)
 WHITE = colors.white
 
-OUT = r"C:\Users\Asus\skillforge\docs\SkillForge-Guide.pdf"
+import os
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "SkillForge-Guide.pdf")
 
 # ---- Styles ----------------------------------------------------------------
 ss = getSampleStyleSheet()
@@ -363,13 +364,13 @@ section('10', 'Running It Locally')
 p('Prerequisites: Node.js 20+, npm, and Docker (for PostgreSQL).')
 p('Quick start', h2)
 steps = [
-    'cp .env.example .env            # fill in secrets',
+    'npm install &amp;&amp; npm run setup   # root tooling + both apps',
+    'cp apps/api/.env.example apps/api/.env',
+    'cp apps/web/.env.example apps/web/.env.local',
     'docker compose up -d db          # start PostgreSQL',
-    'cd server &amp;&amp; npm install',
-    'npx prisma migrate deploy        # create tables',
-    'npm run seed                     # demo users, ideas, mentors, roadmaps, community',
-    'npm run dev                      # API on http://localhost:4000',
-    'cd ../client &amp;&amp; npm install &amp;&amp; npm run dev   # web on http://localhost:3000',
+    'npm run db:deploy                # create tables',
+    'npm run db:seed                  # demo users, ideas, mentors, roadmaps, community',
+    'npm run dev                      # API on :4000 + web on http://localhost:3000',
 ]
 code = Table([[Paragraph(s, monoLight)] for s in steps], colWidths=[165*mm])
 code.setStyle(TableStyle([

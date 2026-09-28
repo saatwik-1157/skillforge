@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+# All values below are throwaway test values for CI only — no real secrets.
+env:
+  NODE_VERSION: '20'
+  NEXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  api:
+    name: API (lint, build, test)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: skillforge
+          POSTGRES_PASSWORD: skillforge
+          POSTGRES_DB: skillforge_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U skillforge -d skillforge_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://skillforge:skillforge@localhost:5432/skillforge_test?schema=public
+      DIRECT_URL: postgresql://skillforge:skillforge@localhost:5432/skillforge_test?schema=public
+      JWT_ACCESS_SECRET: ci-access-secret-not-for-production
+      JWT_REFRESH_SECRET: ci-refresh-secret-not-for-production
+      CLIENT_URL: http://localhost:3000
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/api/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - name: Apply migrations to a fresh database
+        run: npx prisma migrate deploy
+      - run: npm run lint
+      - name: Typecheck and build
+        run: npm run build
+      - run: npm test
+
+  web:
+    name: Web (lint, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_API_URL: http://localhost:4000/api/v1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            apps/web/package-lock.json
+            apps/api/package-lock.json
+      # The web build bundles ../api (scripts/prepare-api.mjs), so it needs the API's deps too.
+      - name: Install API dependencies
+        run: npm ci
+        working-directory: apps/api
+      - name: Install web dependencies
+        run: npm ci
+        working-directory: apps/web
+      - run: npm run lint
+        working-directory: apps/web
+      - run: npm run build
+        working-directory: apps/web
+
+  docker:
+    name: Docker images
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate docker-compose.yml
+        run: docker compose config --quiet
+      - name: Build api and web images (no push)
+        run: docker compose build api web
