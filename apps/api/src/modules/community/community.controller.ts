@@ -9,7 +9,7 @@ import { parsePagination } from '../../utils/pagination';
 export const communityController = {
   async listPosts(req: Request, res: Response) {
     const { page, limit, skip } = parsePagination(req.query);
-    const { items, total } = await communityService.listPosts(req.query as any, { page, limit, skip });
+    const { items, total } = await communityService.listPosts(req.query as never, { page, limit, skip });
     return sendSuccess(res, { items }, { meta: { pagination: buildPagination(page, limit, total) } });
   },
 
@@ -42,7 +42,7 @@ export const communityController = {
   },
 
   async trendingTags(req: Request, res: Response) {
-    const limit = Number((req.query as any).limit) || 10;
+    const limit = Number(req.query.limit) || 10;
     const data = await communityService.trendingTags(limit);
     return sendSuccess(res, data);
   },
