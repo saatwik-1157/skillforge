@@ -317,7 +317,7 @@ export default function BusinessDetailPage() {
                       <span className="text-muted-foreground">–</span> {formatINR(b.maxInvestment)}
                     </p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      A detailed cost breakdown hasn't been published yet.
+                      A detailed cost breakdown hasn&apos;t been published yet.
                     </p>
                   </Section>
                 )}

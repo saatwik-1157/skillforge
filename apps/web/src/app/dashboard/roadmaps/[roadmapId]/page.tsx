@@ -12,8 +12,6 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Spinner, EmptyState } from '@/components/shared/states';
 import { api } from '@/lib/api';
